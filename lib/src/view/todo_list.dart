@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_mvvm_provider_flutter_app/src/viewmodel/todo_viewmodel.dart';
+
+
 
 class TodoList extends StatelessWidget {
   const TodoList({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final todocontroller = Provider.of<TodoViewModel>(context);
     return Scaffold(
       backgroundColor: Colors.red,
       appBar: AppBar(
@@ -13,21 +18,25 @@ class TodoList extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          todocontroller.navigateToCreate();
+        },
         child: const Icon(Icons.add),
       ),
       body: Column(
         children: [
           ListView.builder(
-              itemCount: 3,
+              itemCount: todocontroller.allTodos.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, i) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ListTile(
                     tileColor: Colors.white,
-                    title: const Text("Title"),
-                    subtitle: const Text("SubTitle"),
+                    title:
+                        Text(todocontroller.allTodos[i].todoTitle.toString()),
+                    subtitle: Text(
+                        todocontroller.allTodos[i].todoDescription.toString()),
                     trailing: PopupMenuButton(
                       child: const Icon(Icons.more_vert),
                       itemBuilder: (BuildContext context) =>
@@ -43,10 +52,12 @@ class TodoList extends StatelessWidget {
                       ],
                       onSelected: (String value) {
                         if (value == "edit") {
-                          print("Edit");
+                          todocontroller
+                              .navigateToEdit(todocontroller.allTodos[i]);
                         }
                         if (value == "delete") {
-                          print("Delete");
+                          todocontroller.deleteTodo(
+                              todocontroller.allTodos[i].sId.toString(), i);
                         }
                       },
                     ),
